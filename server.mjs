@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import cors from "cors";
+import "dotenv/config";
 import apiv1 from "./APIv1/index.mjs";
 import apiv2 from "./APIv2/index.mjs";
 
