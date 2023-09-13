@@ -28,7 +28,6 @@ router.get("/posts", async (req, res, next) => {
 
     const queryResponse = await pineIndex.query({
       vector: vector,
-      // id: "vec1",
       topK: 10000,
       includeValues: false,
       includeMetadata: true,
@@ -81,31 +80,28 @@ router.post("/post", async (req, res, next) => {
 
 router.put("/post/:postId", async (req, res, next) => {
   const id = req.params.postId;
-  if (!ObjectId.isValid(id)) {
-    res.status(403).send(`Invalid post id`);
-    return;
-  }
   if (!req.body.title || !req.body.text) {
     res.status(403).send(`Required parameter missing`);
     return;
   }
-  let updatedData = {};
-  if (req.body.title) {
-    updatedData.title = req.body.title;
-  }
-  if (req.body.text) {
-    updatedData.text = req.body.text;
-  }
-
   try {
-    const updatedResponse = await dbCollection.updateOne(
+    const response = await openaiClient.embeddings.create({
+      model: "text-embedding-ada-002",
+      input: `${req.body.title} ${req.body.text}`,
+    });
+    const vector = response?.data[0]?.embedding;
+
+    const upsertResponse = await pineIndex.upsert([
       {
-        _id: new ObjectId(id),
+        id: req.params.postId,
+        values: vector,
+        metadata: {
+          title: req.body.title,
+          text: req.body.text,
+        },
       },
-      {
-        $set: updatedData,
-      }
-    );
+    ]);
+
     res.send("Post Updated Successfully");
   } catch (error) {
     res.status(500).send("server error, please try later");
