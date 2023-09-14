@@ -92,8 +92,8 @@ const CreatePost = () => {
   };
   return (
     <div>
-      <div className="flex flex-col md:flex-row md:justify-between">
-        <div className=" border-2 border-purple-900 max-w-[450px] bg-[#E9E4F0]">
+      <div className="flex flex-col-reverse md:flex-row md:justify-between md:items-center gap-y-6">
+        <div className=" border-2 border-purple-900 max-w-[450px] md:w-[450px] bg-[#E9E4F0]">
           <form onSubmit={submitPost} className=" flex flex-col gap-2 p-4">
             <input
               className="border-2 p-2 text-lg outline-none"
@@ -121,10 +121,21 @@ const CreatePost = () => {
             </button>
           </form>
         </div>
-        <div>
-          <form className="" onSubmit={searchHandler}>
-            <input type="search" ref={searchRef} placeholder="Search" />
-            <button type="submit">
+        <div className="">
+          <form
+            className="flex items-center border-2 border-red-600 bg-white w-[300px] px-2"
+            onSubmit={searchHandler}
+          >
+            <input
+              type="search"
+              ref={searchRef}
+              placeholder="Search"
+              className=" px-4 py-2 text-xl bg-transparent"
+            />
+            <button
+              type="submit"
+              className=" text-orange-600 text-2xl flex items-center"
+            >
               <SearchOutlined />
             </button>
           </form>
