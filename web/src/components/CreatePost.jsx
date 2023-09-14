@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Post from "./Post";
 import EditPostComp from "./EditPostComp";
-import { message } from "antd";
+import { message, Spin } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
 const CreatePost = () => {
@@ -15,21 +15,25 @@ const CreatePost = () => {
   const searchRef = useRef(null);
   useEffect(() => {
     const fetchData = async () => {
+      setConfirmLoading(true);
       try {
         const response = await axios.get(`${baseURL}/api/v1/posts`);
         setAllPosts(response.data);
+        setConfirmLoading(false);
       } catch (error) {}
     };
     fetchData();
   }, [toggleRefresh]);
   const searchHandler = async (e) => {
     e.preventDefault();
+    setConfirmLoading(true);
     try {
       const response = await axios.get(
         `${baseURL}/api/v1/search?q=${searchRef.current.value}`
       );
       console.log("searchresponse", response);
       setAllPosts([...response.data]);
+      setConfirmLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -56,7 +60,7 @@ const CreatePost = () => {
     try {
       const response = await axios.delete(`${baseURL}/api/v1/post/${id}`);
       console.log(response.data);
-      setConfirmLoading(true);
+
       message.success(`${response.data}`);
       setToggleRefresh(!toggleRefresh);
     } catch (error) {
@@ -92,6 +96,9 @@ const CreatePost = () => {
   };
   return (
     <div>
+      <div className=" fixed top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] ">
+        {confirmLoading ? <Spin size="large" /> : ""}
+      </div>
       <div className="flex flex-col-reverse md:flex-row md:justify-between md:items-center gap-y-6">
         <div className=" border-2 border-purple-900 max-w-[450px] md:w-[450px] bg-[#E9E4F0]">
           <form onSubmit={submitPost} className=" flex flex-col gap-2 p-4">
@@ -121,20 +128,20 @@ const CreatePost = () => {
             </button>
           </form>
         </div>
-        <div className="">
+        <div className=" lg:mr-12">
           <form
-            className="flex items-center border-2 border-red-600 bg-white w-[300px] px-2"
+            className="flex items-center border-2 border-blue-600 bg-white w-[300px] px-2 max-[470px]:w-full"
             onSubmit={searchHandler}
           >
             <input
               type="search"
               ref={searchRef}
               placeholder="Search"
-              className=" px-4 py-2 text-xl bg-transparent"
+              className=" px-4 py-2 text-xl bg-transparent w-full outline-none"
             />
             <button
               type="submit"
-              className=" text-orange-600 text-2xl flex items-center"
+              className=" text-blue-500 text-2xl flex items-center"
             >
               <SearchOutlined />
             </button>
