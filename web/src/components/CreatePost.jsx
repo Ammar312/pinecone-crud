@@ -3,27 +3,41 @@ import axios from "axios";
 import Post from "./Post";
 import EditPostComp from "./EditPostComp";
 import { message } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 const CreatePost = () => {
-  // const baseURL = "http://localhost:3000";
+  const baseURL = "http://localhost:3000";
   const [allPosts, setAllPosts] = useState([]);
   const [toggleRefresh, setToggleRefresh] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const titleInput = useRef();
-  const bodyInput = useRef();
+  const titleInput = useRef(null);
+  const bodyInput = useRef(null);
+  const searchRef = useRef(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`api/v1/posts`);
+        const response = await axios.get(`${baseURL}/api/v1/posts`);
         setAllPosts(response.data);
       } catch (error) {}
     };
     fetchData();
   }, [toggleRefresh]);
+  const searchHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.get(
+        `${baseURL}/api/v1/search?q=${searchRef.current.value}`
+      );
+      console.log("searchresponse", response);
+      setAllPosts([...response.data]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const submitPost = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`api/v1/post`, {
+      const response = await axios.post(`${baseURL}/api/v1/post`, {
         title: titleInput.current.value,
         text: bodyInput.current.value,
       });
@@ -40,7 +54,7 @@ const CreatePost = () => {
   };
   const deleteHandle = async (id) => {
     try {
-      const response = await axios.delete(`api/v1/post/${id}`);
+      const response = await axios.delete(`${baseURL}/api/v1/post/${id}`);
       console.log(response.data);
       setConfirmLoading(true);
       message.success(`${response.data}`);
@@ -65,7 +79,7 @@ const CreatePost = () => {
     const text = e.target.parentElement.previousElementSibling.lastChild.value;
 
     try {
-      const response = await axios.put(`api/v1/post/${id}`, {
+      const response = await axios.put(`${baseURL}/api/v1/post/${id}`, {
         title: title,
         text: text,
       });
@@ -78,6 +92,12 @@ const CreatePost = () => {
   };
   return (
     <div>
+      <form className="" onSubmit={searchHandler}>
+        <input type="search" ref={searchRef} placeholder="Search" />
+        <button type="submit">
+          <SearchOutlined />
+        </button>
+      </form>
       <div className=" border-2 border-purple-900 max-w-lg bg-[#E9E4F0]">
         <form onSubmit={submitPost} className=" flex flex-col gap-2 p-4">
           <input

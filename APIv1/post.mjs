@@ -119,4 +119,32 @@ router.delete("/post/:postId", async (req, res, next) => {
   }
 });
 
+router.get("/search", async (req, res) => {
+  try {
+    const response = await openaiClient.embeddings.create({
+      model: "text-embedding-ada-002",
+      input: req.query.q,
+    });
+    const vector = response?.data[0]?.embedding;
+
+    const queryResponse = await pineIndex.query({
+      vector: vector,
+      topK: 20,
+      includeValues: false,
+      includeMetadata: true,
+    });
+    console.log("queryResponse", queryResponse);
+    const formattedOutput = queryResponse.matches.map((eachMatch) => ({
+      text: eachMatch?.metadata?.text,
+      title: eachMatch?.metadata?.title,
+      _id: eachMatch?.id,
+    }));
+
+    res.send(formattedOutput);
+  } catch (error) {
+    console.log("error getting data pinecone: ", error);
+    res.status(500).send("server error, please try later");
+  }
+});
+
 export default router;
