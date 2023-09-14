@@ -6,7 +6,7 @@ import { message, Spin } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
 const CreatePost = () => {
-  const baseURL = "http://localhost:3000";
+  // const baseURL = "http://localhost:3000";
   const [allPosts, setAllPosts] = useState([]);
   const [toggleRefresh, setToggleRefresh] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -17,7 +17,7 @@ const CreatePost = () => {
     const fetchData = async () => {
       setConfirmLoading(true);
       try {
-        const response = await axios.get(`${baseURL}/api/v1/posts`);
+        const response = await axios.get(`api/v1/posts`);
         setAllPosts(response.data);
         setConfirmLoading(false);
       } catch (error) {}
@@ -29,7 +29,7 @@ const CreatePost = () => {
     setConfirmLoading(true);
     try {
       const response = await axios.get(
-        `${baseURL}/api/v1/search?q=${searchRef.current.value}`
+        `api/v1/search?q=${searchRef.current.value}`
       );
       console.log("searchresponse", response);
       setAllPosts([...response.data]);
@@ -41,7 +41,7 @@ const CreatePost = () => {
   const submitPost = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${baseURL}/api/v1/post`, {
+      const response = await axios.post(`api/v1/post`, {
         title: titleInput.current.value,
         text: bodyInput.current.value,
       });
@@ -58,7 +58,7 @@ const CreatePost = () => {
   };
   const deleteHandle = async (id) => {
     try {
-      const response = await axios.delete(`${baseURL}/api/v1/post/${id}`);
+      const response = await axios.delete(`api/v1/post/${id}`);
       console.log(response.data);
 
       message.success(`${response.data}`);
@@ -83,7 +83,7 @@ const CreatePost = () => {
     const text = e.target.parentElement.previousElementSibling.lastChild.value;
 
     try {
-      const response = await axios.put(`${baseURL}/api/v1/post/${id}`, {
+      const response = await axios.put(`api/v1/post/${id}`, {
         title: title,
         text: text,
       });
@@ -108,7 +108,7 @@ const CreatePost = () => {
               required
               placeholder="Title of the post"
               minLength={3}
-              maxLength={70}
+              maxLength={100}
               ref={titleInput}
             />
             <textarea
